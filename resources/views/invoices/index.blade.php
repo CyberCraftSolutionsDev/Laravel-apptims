@@ -18,6 +18,7 @@
                 <th>Customer Name</th>
                 <th>Date</th>
                 <th>Status</th>
+                
                 <th>Total</th>
                 <th>Action</th>
             </tr>
@@ -29,6 +30,7 @@
                 <td>{{ $invoice['customer_name'] }}</td>
                 <td>{{ $invoice['date'] }}</td>
                 <td>{{ $invoice['status'] }}</td>
+               
                 <td>Ksh{{ number_format($invoice['total'], 2) }}</td>
                 <td>
                     <a href="{{ route('invoices.details', $invoice['invoice_id']) }}" class="btn btn-primary">

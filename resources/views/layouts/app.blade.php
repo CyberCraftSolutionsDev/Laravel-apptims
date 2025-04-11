@@ -21,7 +21,7 @@
             <li style="padding: 10px;"><a href="{{ route('contacts.list') }}" style="color: white; text-decoration: none;">📇 Contacts</a></li>
             <li style="padding: 10px;"><a href="{{ route('invoices.list') }}" style="color: white; text-decoration: none;">🧾 Invoices</a></li>
             <li style="padding: 10px;"><a href="{{ route('items.index') }}" style="color: white; text-decoration: none;">📦 Items</a></li>
-            <li style="padding: 10px;"><a href="#" style="color: white; text-decoration: none;">💼 Clients</a></li>
+            <li style="padding: 10px;"><a href="{{ route('creditnotes.index') }}" style="color: white; text-decoration: none;">💼 Credit Notes</a></li>
         </ul>
     </div>
 

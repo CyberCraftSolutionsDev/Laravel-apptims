@@ -11,6 +11,7 @@
             <p><strong>Name:</strong> {{ $item['name'] }}</p>
             <p><strong>Rate:</strong> {{ $item['rate'] }}</p>
             <p><strong>Description:</strong> {{ $item['description'] ?? 'N/A' }}</p>
+            <p><strong>Hs_code:</strong> {{ $item['cf_hs_code'] ?? 'N/A' }}</p>
             <p><strong>Status:</strong> {{ $item['status'] }}</p>
 
             <div class="d-flex justify-content-between">

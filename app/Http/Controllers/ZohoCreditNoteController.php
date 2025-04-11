@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Services\ZohoService;
 
-class ZohoItemController extends Controller
+class ZohoCreditNoteController extends Controller
 {
     private $zohoToken;
     private $organizationId;
@@ -16,11 +16,11 @@ class ZohoItemController extends Controller
     public function __construct()
     {
         $this->zohoToken = ZohoService::getAccessToken();
-        $this->organizationId = env('ZOHO_ORGANIZATION_ID');
-        $this->zohoBaseUrl = "https://www.zohoapis.com/books/v3/items";
+        $this->organizationId = env('ZOHO_ORGANIZATION_ID'); // Getting from .env for flexibility
+        $this->zohoBaseUrl = "https://www.zohoapis.com/books/v3/creditnotes";
     }
 
-    // ✅ Fetch all items
+    // ✅ Fetch all credit notes
     public function index()
     {
         $response = Http::withHeaders([
@@ -28,12 +28,12 @@ class ZohoItemController extends Controller
         ])->get("{$this->zohoBaseUrl}?organization_id={$this->organizationId}");
 
         $data = $response->json();
-        Log::info('Items retrieved: ', $data['items'] ?? []);
+        Log::info('Credit notes retrieved: ', $data['creditnotes'] ?? []);
 
-        return view('items.index', ['items' => $data['items'] ?? []]);
+        return view('creditnotes.index', ['creditnotes' => $data['creditnotes'] ?? []]);
     }
 
-    // ✅ Show single item
+    // ✅ Show single credit note
     public function show($id)
     {
         $response = Http::withHeaders([
@@ -42,29 +42,26 @@ class ZohoItemController extends Controller
 
         $data = $response->json();
 
-        if (!isset($data['item'])) {
-            return redirect()->route('items.index')->with('error', 'Item not found.');
+        if (!isset($data['creditnote'])) {
+            return redirect()->route('creditnotes.index')->with('error', 'Credit Note not found');
         }
 
-        return view('items.show', ['item' => $data['item']]);
+        return view('creditnotes.show', ['creditnote' => $data['creditnote']]);
     }
 
-    // ✅ Show create item form
+    // ✅ Show create credit note form
     public function create()
     {
-        return view('items.create');
+        return view('creditnotes.create');
     }
 
-    // ✅ Store new item
+    // ✅ Store new credit note
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'rate' => 'required|numeric',
-            'description' => 'nullable|string',
-            'unit' => 'required|string',
-            'cf_hs_code' => 'required|string',
-            // Add other fields as required
+            'customer_id' => 'required|string',
+            'date' => 'required|date',
+            'line_items' => 'required|array',
         ]);
 
         $response = Http::withHeaders([
@@ -73,42 +70,37 @@ class ZohoItemController extends Controller
         ])->post("{$this->zohoBaseUrl}?organization_id={$this->organizationId}", $validatedData);
 
         if ($response->failed()) {
-            Log::error('Failed to create item', $response->json());
-            return redirect()->back()->with('error', 'Failed to create item.');
+            Log::error('Failed to create credit note', $response->json());
+            return redirect()->back()->with('error', 'Failed to create credit note.');
         }
 
-        return redirect()->route('items.index')->with('success', 'Item created successfully!');
+        return redirect()->route('creditnotes.index')->with('success', 'Credit note created successfully!');
     }
 
-    // ✅ Edit item form
+    // ✅ Show edit credit note form
     public function edit($id)
     {
-        Log::info("Editing item with ID: {$id}");
-
         $response = Http::withHeaders([
             'Authorization' => "Zoho-oauthtoken {$this->zohoToken}",
         ])->get("{$this->zohoBaseUrl}/{$id}?organization_id={$this->organizationId}");
 
         $data = $response->json();
 
-        if (!isset($data['item'])) {
-            Log::error("Item with ID {$id} not found.");
-            return redirect()->route('items.index')->with('error', 'Item not found.');
+        if (!isset($data['creditnote'])) {
+            Log::error("Credit note with ID {$id} not found.");
+            return redirect()->route('creditnotes.index')->with('error', 'Credit note not found');
         }
 
-        return view('items.edit', ['item' => $data['item']]);
+        return view('creditnotes.edit', ['creditnote' => $data['creditnote']]);
     }
 
-    // ✅ Update item
+    // ✅ Update credit note
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'rate' => 'required|numeric',
-            'description' => 'nullable|string',
-            'unit' => 'required|string',
-            'cf_hs_code' => 'required|string',
-            // Add other fields as required
+            'customer_id' => 'required|string',
+            'date' => 'required|date',
+            'line_items' => 'required|array',
         ]);
 
         $response = Http::withHeaders([
@@ -117,14 +109,14 @@ class ZohoItemController extends Controller
         ])->put("{$this->zohoBaseUrl}/{$id}?organization_id={$this->organizationId}", $validatedData);
 
         if ($response->failed()) {
-            Log::error('Failed to update item', $response->json());
-            return redirect()->back()->with('error', 'Failed to update item.');
+            Log::error('Failed to update credit note', $response->json());
+            return redirect()->back()->with('error', 'Failed to update credit note.');
         }
 
-        return redirect()->route('items.index')->with('success', 'Item updated successfully!');
+        return redirect()->route('creditnotes.index')->with('success', 'Credit note updated successfully!');
     }
 
-    // ✅ Optional: Delete item (if needed in the future)
+    // ✅ Delete a credit note
     public function destroy($id)
     {
         $response = Http::withHeaders([
@@ -132,9 +124,10 @@ class ZohoItemController extends Controller
         ])->delete("{$this->zohoBaseUrl}/{$id}?organization_id={$this->organizationId}");
 
         if ($response->failed()) {
-            return redirect()->route('items.index')->with('error', 'Failed to delete item.');
+            Log::error('Failed to delete credit note', $response->json());
+            return redirect()->route('creditnotes.index')->with('error', 'Failed to delete credit note.');
         }
 
-        return redirect()->route('items.index')->with('success', 'Item deleted successfully!');
+        return redirect()->route('creditnotes.index')->with('success', 'Credit note deleted successfully!');
     }
 }

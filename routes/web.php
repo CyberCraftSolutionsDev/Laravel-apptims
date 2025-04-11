@@ -2,7 +2,15 @@
 use App\Http\Controllers\ZohoContactController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ZohoItemController;
+use App\Http\Controllers\ZohoCreditNoteController;
 
+Route::get('/creditnotes', [ZohoCreditNoteController::class, 'index'])->name('creditnotes.index');
+Route::get('/creditnotes/create', [ZohoCreditNoteController::class, 'create'])->name('creditnotes.create');
+Route::post('/creditnotes', [ZohoCreditNoteController::class, 'store'])->name('creditnotes.store');
+Route::get('/creditnotes/{id}', [ZohoCreditNoteController::class, 'show'])->name('creditnotes.show');
+Route::get('/creditnotes/{id}/edit', [ZohoCreditNoteController::class, 'edit'])->name('creditnotes.edit');
+Route::put('/creditnotes/{id}', [ZohoCreditNoteController::class, 'update'])->name('creditnotes.update');
+Route::delete('/creditnotes/{id}', [ZohoCreditNoteController::class, 'destroy'])->name('creditnotes.destroy');
 
 Route::prefix('items')->group(function () {
     Route::get('/create', [ZohoItemController::class, 'create'])->name('items.create');

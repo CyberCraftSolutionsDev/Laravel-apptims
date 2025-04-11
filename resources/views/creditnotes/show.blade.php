@@ -2,20 +2,17 @@
 
 @section('content')
 <div class="container">
-    <h2>Invoice Details - {{ $invoice['invoice_number'] }}</h2>
+    <h2>Credit Note Details - {{ $creditnote['creditnote_number'] }}</h2>
 
     {{-- 👤 Customer Details --}}
-    <p><strong>Customer:</strong> {{ $invoice['customer_name'] }}</p>
-    <p><strong>Date:</strong> {{ $invoice['date'] }}</p>
-    <p><strong>Status:</strong> {{ $invoice['status'] }}</p>
-    <p><strong>Total:</strong> Ksh{{ number_format($invoice['total'], 2) }}</p>
+    <p><strong>Customer:</strong> {{ $creditnote['customer_name'] }}</p>
+    <p><strong>Date:</strong> {{ $creditnote['date'] }}</p>
+    <p><strong>Status:</strong> {{ $creditnote['status'] }}</p>
+    <p><strong>Total:</strong> Ksh{{ number_format($creditnote['total'], 2) }}</p>
 
     {{-- 🧾 New Fields from Zoho --}}
-    <p><strong>Pin:</strong> {{ $invoice['cf_pin'] ?? 'N/A' }}</p>
-
-    {{-- Extract HS Code from the first Line Item --}}
-    <p><strong>HS Code:</strong> {{ $invoice['line_items'][0]['cf_hs_code'] ?? 'N/A' }}</p>
-
+    <p><strong>Pin:</strong> {{ $contact['cf_pin'] ?? 'N/A' }}</p>
+    
     <h3>Line Items</h3>
     <table class="table">
         <thead>
@@ -27,30 +24,30 @@
                 <th>Total</th>
                 <th>HS Code</th> {{-- ✅ New column --}}
                 <th>Reference Number</th>
-                <th>Invoice Url</th> {{-- ✅ New column --}}
+                <th>Credit Note Url</th> {{-- ✅ New column --}}
             </tr>
         </thead>
         <tbody>
-            @foreach($invoice['line_items'] as $item)
+            @foreach($creditnote['line_items'] as $item)
             <tr>
                 <td>{{ $item['name'] }}</td>
                 <td>{{ $item['description'] }}</td>
                 <td>{{ $item['quantity'] }}</td>
                 <td>Ksh{{ number_format($item['rate'], 2) }}</td>
                 <td>Ksh{{ number_format($item['item_total'], 2) }}</td>
-                <td>{{ $item['cf_hs_code'] ?? 'N/A' }}</td> {{-- HS Code from item --}}
+                <td>{{ $item['cf_hs_code'] ?? 'N/A' }}</td> {{-- ✅ HS Code --}}
                 <td>{{ $item['reference_number'] ?? 'N/A' }}</td>
-                <td>{{ $item['invoice_url'] ?? 'N/A' }}</td> {{-- Invoice URL --}}
+                <td>{{ $item['creditnote_url'] ?? 'N/A' }}</td> {{-- ✅ Credit Note URL --}}
             </tr>
             @endforeach
         </tbody>
     </table>
 
     {{-- ✅ Edit Button --}}
-    <a href="{{ route('invoices.edit', $invoice['invoice_id']) }}" class="btn btn-primary">
-        Edit Invoice
+    <a href="{{ route('creditnotes.edit', $creditnote['creditnote_id']) }}" class="btn btn-primary">
+        Edit Credit Note
     </a>
 
-    <a href="{{ route('invoices.list') }}" class="btn btn-secondary">Back to Invoices</a>
+    <a href="{{ route('creditnotes.index') }}" class="btn btn-secondary">Back to Credit Notes</a>
 </div>
 @endsection
